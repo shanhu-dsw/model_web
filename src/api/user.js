@@ -1,24 +1,36 @@
 import request from '@/utils/request'
 
-export function login(data) {
+export function login(user) {
   return request({
-    url: '/vue-admin-template/user/login',
-    method: 'post',
-    data
+    url: '/api/auth/validate_username_password',
+    method: "Post",
+    data:{
+      user:{
+        source_type:"Admin",
+        username: user.username,
+        password: user.password  
+      }
+      }
+  })
+}
+export function getcamera_captures(params){
+  return request({
+    url:"/api/camera_captures",
+    method:"get",
+    params
   })
 }
 
-export function getInfo(token) {
+export function getlocation(params){
   return request({
-    url: '/vue-admin-template/user/info',
-    method: 'get',
-    params: { token }
+    url:"/api/location_events",
+    method:"get",
+    params
   })
 }
-
-export function logout() {
+export function getcamera(){
   return request({
-    url: '/vue-admin-template/user/logout',
-    method: 'post'
+    url:"/api/cameras",
+    method:"get"
   })
 }

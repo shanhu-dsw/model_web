@@ -1,3 +1,4 @@
+
 <template>
   <div class="navbar">
     <hamburger :is-active="sidebar.opened" class="hamburger-container" @toggleClick="toggleSideBar" />
@@ -7,23 +8,20 @@
     <div class="right-menu">
       <el-dropdown class="avatar-container" trigger="click">
         <div class="avatar-wrapper">
-          <img :src="avatar+'?imageView2/1/w/80/h/80'" class="user-avatar">
+          <img src="@/assets/src=http___bkimg.cdn.bcebos.com_pic_08f790529822720e0cf399c1a3811d46f21fbe097dff&refer=http___bkimg.cdn.bcebos.webp" class="user-avatar">
           <i class="el-icon-caret-bottom" />
         </div>
         <el-dropdown-menu slot="dropdown" class="user-dropdown">
           <router-link to="/">
             <el-dropdown-item>
-              Home
+              首页
             </el-dropdown-item>
           </router-link>
-          <a target="_blank" href="https://github.com/PanJiaChen/vue-admin-template/">
-            <el-dropdown-item>Github</el-dropdown-item>
-          </a>
-          <a target="_blank" href="https://panjiachen.github.io/vue-element-admin-site/#/">
-            <el-dropdown-item>Docs</el-dropdown-item>
-          </a>
+         <router-link to="/charts">
+          <el-dropdown-item>接口文档</el-dropdown-item>
+         </router-link>
           <el-dropdown-item divided @click.native="logout">
-            <span style="display:block;">Log Out</span>
+            <span style="display:block;">退出登录</span>
           </el-dropdown-item>
         </el-dropdown-menu>
       </el-dropdown>
@@ -35,7 +33,7 @@
 import { mapGetters } from 'vuex'
 import Breadcrumb from '@/components/Breadcrumb'
 import Hamburger from '@/components/Hamburger'
-
+import { resetRouter } from '@/router'
 export default {
   components: {
     Breadcrumb,
@@ -51,10 +49,16 @@ export default {
     toggleSideBar() {
       this.$store.dispatch('app/toggleSideBar')
     },
-    async logout() {
-      await this.$store.dispatch('user/logout')
-      this.$router.push(`/login?redirect=${this.$route.fullPath}`)
-    }
+    logout() {
+      this.$store.commit('user/removeToken')
+      this.$store.commit('user/reomveUserInfo')
+      this.$router.push(`/login`)
+
+      resetRouter()
+    },
+    // jumpto(){
+    //   this.$router.replace('/charts')
+    // }
   }
 }
 </script>
