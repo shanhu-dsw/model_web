@@ -2,16 +2,23 @@ import axios from 'axios'
 import { MessageBox, Message } from 'element-ui'
 import store from '@/store'
 import { getToken } from '@/utils/auth'
+import qs from 'qs'
 
 // create an axios instance
 const service = axios.create({
-  baseURL: 'http://192.168.10.150'
+  baseURL: 'http://192.168.10.150:9110/mms/module'
 })
 
 // request interceptor
 service.interceptors.request.use(config => {
   if (store.getters.token) {
-    config.headers['Authorization'] = `Bearer ${store.getters.token}`
+    if (config.data == undefined) {
+      config.data = {};
+    }
+    config.data['Account-Token'] = getToken();
+  }
+  if (config.headers['Content-Type'] == 'application/x-www-form-urlencoded') {
+    config.data = qs.stringify(config.data);
   }
   return config 
 }, error => {

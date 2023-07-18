@@ -1,8 +1,7 @@
 import {getToken,setToken,removeToken} from '@/utils/auth'
-import { login } from '@/api/user'
+import { login,refreshAdminToken} from '@/api/user'
 const state ={
     token:getToken() || null,
-    userInfo:{}
 }
 const mutations = {
     setToken(state,token){
@@ -17,10 +16,14 @@ const mutations = {
 const actions = {
     async login(context, data) {
       const result = await login(data) 
-      if (result.data) {
-        context.commit('setToken', result.data.data.token)
-      }else{
-        Message.error(message)
+      if (result.data.status == "SUCCESS") {
+        context.commit('setToken', result.data.content.token)
+      }
+    },
+    async refreshAdminToken(context, data) {
+      const result_token = await refreshAdminToken() 
+      if (result_token.data.status == "SUCCESS") {
+        context.commit('setToken', result_token.data.content.token)
       }
     },
     logout(context) {

@@ -11,10 +11,11 @@ import '@/styles/index.scss' // global css
 import App from './App'
 import store from './store'
 import router from './router'
-
+import "@/assets/jsmpeg/jsmpeg.min.js"
 import '@/icons' // icon
 import '@/permission' // permission control
 import clipboard from 'clipboard'
+
 Vue.prototype.clipboard = clipboard
 /**
  * If you don't want to use mock-server

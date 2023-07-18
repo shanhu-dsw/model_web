@@ -1,6 +1,6 @@
 module.exports = {
 
-  title: '公安督察',
+  title: '易巡智能识别模型管理平台',
 
   /**
    * @type {boolean} true | false
@@ -12,5 +12,5 @@ module.exports = {
    * @type {boolean} true | false
    * @description Whether show the logo in sidebar
    */
-  sidebarLogo: false
+  sidebarLogo: true
 }

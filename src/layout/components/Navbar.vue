@@ -2,8 +2,12 @@
 <template>
   <div class="navbar">
     <hamburger :is-active="sidebar.opened" class="hamburger-container" @toggleClick="toggleSideBar" />
+    <div class="app-breadcrumb">
+      易巡智能识别模型管理平台
+      <span class="breadBtn">V1.0.0.1</span>
+  </div>
 
-    <breadcrumb class="breadcrumb-container" />
+    <!-- <breadcrumb class="breadcrumb-container" /> -->
 
     <div class="right-menu">
       <el-dropdown class="avatar-container" trigger="click">
@@ -15,6 +19,11 @@
           <router-link to="/">
             <el-dropdown-item>
               首页
+            </el-dropdown-item>
+          </router-link>
+          <router-link to="/change_password/index">
+            <el-dropdown-item>
+              修改密码
             </el-dropdown-item>
           </router-link>
          <router-link to="/charts">
@@ -40,6 +49,11 @@ export default {
     Hamburger
   },
   computed: {
+    activeMenu() {
+    const route = this.$route
+    // 如果当前路由有 meta.activeMenu 属性，就使用它，否则使用路由的 path
+    return route.meta.activeMenu || route.path
+  },
     ...mapGetters([
       'sidebar',
       'avatar'
@@ -64,6 +78,27 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+// .navbar {
+//     background-image: -webkit-linear-gradient(left, #3d6df8, #5b8cff)!important;
+// }
+.app-breadcrumb {
+  display: inline-block;
+  font-size: 18px;
+  line-height: 50px;
+  margin-left: 10px;
+  color: #333;
+  cursor: text;
+  .breadBtn {
+    background: #84a9fe;
+    font-size: 14px;
+    padding: 0 10px;
+    display: inline-block;
+    height: 30px;
+    line-height: 30px;
+    border-radius: 10px;
+    margin-left: 15px;
+  }
+}
 .navbar {
   height: 50px;
   overflow: hidden;

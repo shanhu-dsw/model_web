@@ -1,65 +1,135 @@
 <template>
-  <div class="login-container">
-    <el-form
-      ref="loginForm"
-      :model="user"
-      class="login-form"
-      auto-complete="on"
-      label-position="left"
-    >
-      <div class="title-container">
-        <h3 class="title">公安督察运维管理系统</h3>
+  <div class="login">
+    <div class="div1">
+      <div style="margin-top: 100px; font-size: 40px;text-align: center;">易巡智能识别</br>模型管理平台</div>
+      <div style="margin-top: 30px; font-size: 15px">欢迎使用本系统</div>
+    </div>
+    <div class="div2">
+      <div style="
+          width: 100%;
+          align-self: flex-end;
+          display: flex;
+          justify-content: center;
+        ">
+        <el-form
+          ref="loginForm"
+          :model="loginForm"
+          class="login-form"
+        >
+          <!-- <div class="title">系统登录</div>
+
+        <div
+          style="
+            margin-top: 60px;
+            margin-bottom: 30px;
+            text-align: center;
+            font-size: 15px;
+            font-weight: bold;
+            color: #bac4d2;
+          "
+        >
+          请输入账号密码登录系统
+        </div> -->
+
+          <div style="
+              width: 100%;
+              font-size: 30px;
+              text-align: center;
+              margin-bottom: 50px;
+            ">
+            系统登录
+          </div>
+
+          <div style="
+              width: 100%;
+              font-size: 15px;
+              color: #bac4d2;
+              text-align: center;
+              margin-bottom: 30px;
+            ">
+            请输入账号密码登录系统
+          </div>
+
+          <el-form-item prop="name">
+            <el-input
+              v-model="loginForm.name"
+              type="text"
+              auto-complete="off"
+              placeholder="账号"
+            >
+              <template slot="prepend"><svg-icon icon-class="user" /></template>
+              <!-- <svg-icon
+              slot="prefix"
+              icon-class="user"
+              class="el-input__icon input-icon"
+            /> -->
+            </el-input>
+          </el-form-item>
+          <el-form-item prop="password">
+            <el-input
+              v-model="loginForm.password"
+              type="password"
+              auto-complete="off"
+              placeholder="密码"
+              @keyup.enter.native="handleLogin"
+            >
+              <template slot="prepend"><svg-icon icon-class="password" /></template>
+              <!-- <svg-icon
+              slot="prefix"
+              icon-class="password"
+              class="el-input__icon input-icon"
+            /> -->
+            </el-input>
+          </el-form-item>
+
+          <el-checkbox
+            v-model="rememberMe"
+            style="margin: 0px 0px 25px 0px"
+          >记住密码</el-checkbox>
+          <el-form-item style="width: 100%; margin-top: 20px">
+            <el-button
+              :loading="loading"
+              size="medium"
+              type="primary"
+              style="width: 100%"
+              @click.native.prevent="handleLogin"
+            >
+              <span v-if="!loading">登 录</span>
+              <span v-else>登 录 中...</span>
+            </el-button>
+          </el-form-item>
+        </el-form>
       </div>
-
-      <el-form-item prop="username" label="用户名">
-        <el-input
-          ref="username"
-          v-model="user.username"
-          placeholder=""
-          name="username"
-          type="text"
-          tabindex="1"
-          auto-complete="on"
-        />
-      </el-form-item>
-
-      <el-form-item prop="password" label="密码">
-        <el-input
-          :key="passwordType"
-          ref="password"
-          v-model="user.password"
-          :type="passwordType"
-          placeholder=""
-          name="password"
-          tabindex="2"
-          auto-complete="on"
-          @keyup.enter.native="handleLogin"
-        />
-        <span class="show-pwd" @click="showPwd">
-          <svg-icon
-            :icon-class="passwordType === 'password' ? 'eye' : 'eye-open'"
-          />
-        </span>
-      </el-form-item>
-      <el-button class="loginBtn" :loading="loading" type="primary" style="width:100%;margin-bottom:30px;" @click.native.prevent="handleLogin">登录</el-button>
-    </el-form>
+      <div style="
+          font-size: 12px;
+          letter-spacing: 1px;
+          align-self: flex-end;
+          width: 100%;
+          text-align: center;
+          margin-bottom: 10px;
+        ">
+        上海锦绣蓝图信息科技有限公司
+      </div>
+    </div>
   </div>
 </template>
 
 <script>
+import Cookies from "js-cookie";
 import { mapActions } from "vuex";
 import {login} from "@/api/user"
 export default {
   name: "Login",
   data() {
     return {
-        user: {
-        username: '',
+      loginForm: {
+        name: '',
         password: ''
       },
       loading: false,
       passwordType: "password",
       redirect: undefined,
+      rememberMe:true
     }
   },
   watch: {
@@ -69,6 +139,9 @@ export default {
       },
       immediate: true,
     },
+  },
+  created() {
+    this.getCookie();
   },
   methods: {
     ...mapActions(["user/login"]),
@@ -82,129 +155,121 @@ export default {
         this.$refs.password.focus()
       })
     },
-    async handleLogin() {
-      try {
+    getCookie() {
+      const name = Cookies.get("name");
+      const password = Cookies.get("password");
+      const rememberMe = Cookies.get("rememberMe");
+      this.loginForm = {
+        name: name === undefined ? this.loginForm.name : name,
+        password:
+          password === undefined ? this.loginForm.password : password
+      };
+      // this.rememberMe = rememberMe === undefined ? false : rememberMe;
+    },
+     handleLogin() {
         this.loading = true;
-        await this['user/login'](this.user)
+        this['user/login'](this.loginForm).then(res=>{
+          if (this.rememberMe) {
+            Cookies.set("name", this.loginForm.name, { expires: 30 });
+            Cookies.set("password", this.loginForm.password, {
+              expires: 30,
+            });
+            // Cookies.set("rememberMe", this.rememberMe, {
+            //   expires: 30,
+            // });
+          } else {
+            Cookies.remove("name");
+            Cookies.remove("password");
+            // Cookies.remove("rememberMe");
+          }
+          
         this.$router.push("/");
-      } catch (error) {
-        that.$message.error('用户名或密码错误')
+        }).catch(error=>{
+          this.$message.error('用户名或密码错误')
+          this.loading = false;
         console.log(error);
-      } finally {
-        this.loading = false;
-      }
+        
+        })
     },
   },
 };
 </script>
 
-<style lang="scss">
-/* 修复input 背景不协调 和光标变色 */
-/* Detail see https://github.com/PanJiaChen/vue-element-admin/pull/927 */
-
-$bg: #283443;
-$light_gray: #fff;
-$cursor: #fff;
-
-@supports (-webkit-mask: none) and (not (cater-color: $cursor)) {
-  .login-container .el-input input {
-    color: $cursor;
-  }
+<style lang="scss" scope >
+.login {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  font-family: "宋体";
+  background: #dbdbdb;
+  padding: 10vh 20vh;
 }
 
-/* reset element-ui css */
-.login-container {
+.div1 {
+  display: flex;
+  width: 450px;
+  height: 620px;
+  // background: linear-gradient(148deg, #2057b5 0%, #6ab2f8 101%);
+  background-image: url('../../assets/images/login.png');
+  background-size: 101% 100%;
+  flex-direction: column;
+  align-items: center;
+  color: #fff;
+}
+
+.div2 {
+  display: flex;
+  height: 620px;
+  flex-flow: row wrap;
+  align-items: center;
+  background: #fff;
+  width: 650px;
+}
+
+.login-form {
+  border-radius: 6px;
+  background: #ffffff;
+  width: 400px;
+  padding: 25px 25px 5px 25px;
   .el-input {
-    display: inline-block;
-    height: 47px;
-    width: 85%;
-
+    height: 38px;
     input {
-      background: transparent;
-      border: 0px;
-      -webkit-appearance: none;
-      border-radius: 0px;
-      padding: 12px 5px 12px 15px;
-      color: $light_gray;
-      height: 47px;
-      caret-color: $cursor;
-
-      &:-webkit-autofill {
-        box-shadow: 0 0 0px 1000px $bg inset !important;
-        -webkit-text-fill-color: $cursor !important;
-      }
+      height: 38px;
     }
   }
-
-  .el-form-item {
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    background: rgba(0, 0, 0, 0.1);
-    border-radius: 5px;
-    color: #454545;
+  .input-icon {
+    height: 39px;
+    width: 14px;
+    margin-left: 2px;
   }
 }
-</style>
-
-<style lang="scss" scoped>
-$bg: #2d3a4b;
-$dark_gray: #889aa4;
-$light_gray: #eee;
-
-.login-container {
-  min-height: 100%;
-  width: 100%;
-  background-color: $bg;
-  overflow: hidden;
-
-  .login-form {
-    position: relative;
-    width: 520px;
-    max-width: 100%;
-    padding: 160px 35px 0;
-    margin: 0 auto;
-    overflow: hidden;
-  }
-
-  .tips {
-    font-size: 14px;
-    color: #fff;
-    margin-bottom: 10px;
-
-    span {
-      &:first-of-type {
-        margin-right: 16px;
-      }
-    }
-  }
-
-  .svg-container {
-    padding: 6px 5px 6px 15px;
-    color: $dark_gray;
-    vertical-align: middle;
-    width: 30px;
-    display: inline-block;
-  }
-
-  .title-container {
-    position: relative;
-
-    .title {
-      font-size: 26px;
-      color: $light_gray;
-      margin: 0px auto 40px auto;
-      text-align: center;
-      font-weight: bold;
-    }
-  }
-
-  .show-pwd {
-    position: absolute;
-    right: 10px;
-    top: 7px;
-    font-size: 16px;
-    color: $dark_gray;
+.login-tip {
+  font-size: 13px;
+  text-align: center;
+  color: #bfbfbf;
+}
+.login-code {
+  width: 33%;
+  height: 38px;
+  float: right;
+  img {
     cursor: pointer;
-    user-select: none;
+    vertical-align: middle;
   }
+}
+.el-login-footer {
+  height: 40px;
+  line-height: 40px;
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  text-align: center;
+  font-family: Arial;
+  font-size: 12px;
+  letter-spacing: 1px;
+}
+.login-code-img {
+  height: 38px;
 }
 </style>
